@@ -1,0 +1,29 @@
+Playwrite is automation tool as well as it is a farmework also 
+
+to run the typescript 
+
+-->tsx Day16/Main.ts
+
+To Check the Playwright version
+
+-->npx Playwright --version
+
+
+When to use await ---> When We do Back ground actives or  we want thing or if there any statement retun the promise we have to use awaite
+
+“async makes a function return a Promise, and await pauses execution until the Promise resolves
+📦 Promise → Box with future value
+
+🎟 async → Permission to use await
+
+⏳ await → Wait until value comes
+
+PlayWright Run:-
+1. npx playwright test
+2. npx playwright show-report
+3. npx playwright --headed
+4. npx playwright test MyTest1.spec.ts --project=chromium
+5. npx playwright test MyTest1.spec.ts
+6. npx playwright test MyTest1.spec.ts MyTest.spec.ts
+7. npx playwright test -g "verify" (matching Of title like wherever verify is that test case will excute)
+8. npx playwright test --ui

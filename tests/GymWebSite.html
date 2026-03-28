@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IronBurn Gym | Weight Loss & Nutrition</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary: #ff4500; /* Energetic Orange */
+            --dark: #503652;
+            --light: #f4f4f4;
+            --grey: #8d0c0c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--dark);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero span {
+            color: var(--primary);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #e03e00;
+        }
+
+        /* Sections General */
+        section {
+            padding: 60px 5%;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--dark);
+        }
+
+        /* Workouts Grid */
+        .workout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        /* Equipment Section */
+        .equipment-section {
+            background-color: var(--dark);
+            color: white;
+        }
+
+        .equipment-section h2 {
+            color: white;
+        }
+
+        .equipment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .equip-item {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .equip-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* Diet Section */
+        .diet-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .diet-text {
+            flex: 1;
+        }
+
+        .diet-image {
+            flex: 1;
+        }
+
+        .diet-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Gallery Section (New) */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .gallery-item img:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; } /* Simplified for demo */
+            .diet-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">IronBurn Gym</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#workouts">Workouts</a>
+            <a href="#equipment">Equipment</a>
+            <a href="#diet">Diet Plans</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#contact" class="btn" style="padding: 8px 15px; margin-left: 15px;">Join Now</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <h1>Transform Your Body <br> <span>Start Losing Weight Today</span></h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Expert trainers, top-tier equipment, and custom diet plans.</p>
+        <a href="#contact" class="btn">Get Your Free Pass</a>
+    </section>
+
+    <!-- Workouts Section -->
+    <section id="workouts">
+        <h2>Our Weight Loss Programs</h2>
+        <div class="workout-grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="HIIT Workout">
+                <h3>HIIT Cardio</h3>
+                <p>High-intensity interval training designed to burn maximum calories in minimum time.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Strength Training">
+                <h3>Strength Training</h3>
+                <p>Build lean muscle to boost your metabolism and burn fat 24/7.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Functional Fitness">
+                <h3>Functional Fitness</h3>
+                <p>Bodyweight exercises to improve mobility and core strength.</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1544367563-12123d8965cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Yoga">
+                <h3>Yoga & Recovery</h3>
+                <p>Stretching and yoga sessions to prevent injury and aid recovery.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Section -->
+    <section id="equipment" class="equipment-section">
+        <h2>State of the Art Equipment</h2>
+        <div class="equipment-list">
+            <div class="equip-item">
+                <img src="https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Cardio Machines">
+                <h3>Cardio Zone</h3>
+                <p>Treadmills, Rowers, Ellipticals</p>
+            </div>
+            <div class="equip-item">
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Free Weights">
+                <h3>Free Weights</h3>
+                <p>Dumbbells up to 100lbs, Barbells</p>
+            </div>
+            <div class="equip-item">
+                <img src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Machines">
+                <h3>Resistance Machines</h3>
+                <p>Leg Press, Chest Press, Lat Pulldown</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diet Section -->
+    <section id="diet">
+        <h2>Nutrition & Diet Plans</h2>
+        <div class="diet-container">
+            <div class="diet-image">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Healthy Food">
+            </div>
+            <div class="diet-text">
+                <h3>Don't Just Train. Eat Right.</h3>
+                <p>Exercise is only 30% of the battle. Our nutritionists create custom meal plans for you.</p>
+                <ul style="margin-top: 20px; margin-left: 20px;">
+                    <li><strong>Calorie Deficit Plans:</strong> Safe and sustainable weight loss.</li>
+                    <li><strong>Macro Counting:</strong> Learn to balance Protein, Carbs, and Fats.</li>
+                    <li><strong>Supplement Guidance:</strong> Expert advice on what to take and what to avoid.</li>
+                </ul>
+                <br>
+                <a href="#" class="btn">View Sample Meal Plan</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section (New) -->
+    <section id="gallery" style="background-color: hsl(212, 42%, 60%);">
+        <h2>Gym Gallery</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Gym Interior">
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Weights">
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Trainer">
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Workout">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact / Footer -->
+    <footer id="contact">
+        <h2>Ready to Start?</h2>
+        <p>123 Fitness Street, Muscle City, USA</p>
+        <p>Phone: (555) 123-4567 | Email: info@ironburngym.com</p>
+        <br>
+        <p>&copy; 2023 IronBurn Gym. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
