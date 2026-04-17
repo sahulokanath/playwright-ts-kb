@@ -1,0 +1,210 @@
+<testsuites id="" name="" tests="6" failures="3" skipped="0" errors="0" time="29.526036">
+<testsuite name="reporter.spec.ts" timestamp="2026-04-13T16:31:42.779Z" hostname="chromium" tests="3" failures="1" skipped="0" time="12.449" errors="0">
+<testcase name="Verify The Report1" classname="reporter.spec.ts" time="3.425">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reporter-Verify-The-Report1-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Verify The Report2" classname="reporter.spec.ts" time="3.507">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reporter-Verify-The-Report2-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Verify The Report3" classname="reporter.spec.ts" time="5.517">
+<failure message="reporter.spec.ts:25:5 Verify The Report3" type="FAILURE">
+<![CDATA[  [chromium] › reporter.spec.ts:25:5 › Verify The Report3 ──────────────────────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Powered by nopCommerce1', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Powered by nopCommerce1', { exact: true })
+        - waiting for" https://demowebshop.tricentis.com/login" navigation to finish...
+        - navigated to "https://demowebshop.tricentis.com/login"
+
+
+      27 |    
+      28 |     const text =  page.getByText('Powered by nopCommerce1', { exact: true })
+    > 29 |     await expect(text).toBeVisible();
+         |                        ^
+      30 | })
+        at /home/lokanath/TSDEMOs/playwright-ts-kb/tests/reporter.spec.ts:29:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report3-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report3-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/reporter-Verify-The-Report3-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report3-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/reporter-Verify-The-Report3-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-chromium/error-context.md]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="reporter.spec.ts" timestamp="2026-04-13T16:31:42.779Z" hostname="firefox" tests="3" failures="2" skipped="0" time="19.146" errors="0">
+<testcase name="Verify The Report1" classname="reporter.spec.ts" time="8.529">
+<failure message="reporter.spec.ts:8:5 Verify The Report1" type="FAILURE">
+<![CDATA[  [firefox] › reporter.spec.ts:8:5 › Verify The Report1 ────────────────────────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('img', { name: 'Tricentis Demo Web Shop' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('img', { name: 'Tricentis Demo Web Shop' })
+        - waiting for" https://demowebshop.tricentis.com/login" navigation to finish...
+
+
+      11 |     const logo = page.getByRole('img', { name: 'Tricentis Demo Web Shop' })
+      12 |
+    > 13 |     await expect(logo).toBeVisible();
+         |                        ^
+      14 | })
+      15 |
+      16 |
+        at /home/lokanath/TSDEMOs/playwright-ts-kb/tests/reporter.spec.ts:13:24
+
+    Error: page.goto: Test ended.
+    Call log:
+      - navigating to "https://demowebshop.tricentis.com/login", waiting until "load"
+
+
+      3 | test.beforeEach('beforetest',async({page})=>{
+      4 |
+    > 5 |      page.goto('https://demowebshop.tricentis.com/login');
+        |           ^
+      6 | })
+      7 |
+      8 | test('Verify The Report1', async ({ page }) => {
+        at /home/lokanath/TSDEMOs/playwright-ts-kb/tests/reporter.spec.ts:5:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report1-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/reporter-Verify-The-Report1-firefox/error-context.md
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report1-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report1-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/reporter-Verify-The-Report1-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reporter-Verify-The-Report1-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report1-firefox/error-context.md]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report1-firefox/video.webm]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report1-firefox/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Verify The Report2" classname="reporter.spec.ts" time="4.188">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reporter-Verify-The-Report2-firefox/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Verify The Report3" classname="reporter.spec.ts" time="6.429">
+<failure message="reporter.spec.ts:25:5 Verify The Report3" type="FAILURE">
+<![CDATA[  [firefox] › reporter.spec.ts:25:5 › Verify The Report3 ───────────────────────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Powered by nopCommerce1', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Powered by nopCommerce1', { exact: true })
+        - waiting for" https://demowebshop.tricentis.com/login" navigation to finish...
+        - navigated to "https://demowebshop.tricentis.com/login"
+
+
+      27 |    
+      28 |     const text =  page.getByText('Powered by nopCommerce1', { exact: true })
+    > 29 |     await expect(text).toBeVisible();
+         |                        ^
+      30 | })
+        at /home/lokanath/TSDEMOs/playwright-ts-kb/tests/reporter.spec.ts:29:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report3-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report3-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/reporter-Verify-The-Report3-firefox/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/reporter-Verify-The-Report3-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/reporter-Verify-The-Report3-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-firefox/video.webm]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-firefox/error-context.md]]
+
+[[ATTACHMENT|test-results/reporter-Verify-The-Report3-firefox/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
