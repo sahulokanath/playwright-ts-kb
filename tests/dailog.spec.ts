@@ -1,8 +1,14 @@
 import { test, expect, Locator } from "@playwright/test";
 import { text } from "node:stream/consumers";
 
+/*
+A dialog is a browser popup like alert, confirm, or prompt that blocks interaction until handled. 
+In Playwright, we handle dialogs using the page.on('dialog') event. 
+We can accept or dismiss the dialog and also capture its message. Handling dialogs is important to validate user actions like delete confirmations
+3types :- Alert  ok button,conformation alert [ok and cancle], proment [pass massage ]
+*/
 
-test.skip('Verify The Dailog', async ({ page }) => {
+test.skip('Verify The Dailog Alert', async ({ page }) => {
 
   await page.goto("https://testautomationpractice.blogspot.com/")
   page.on('dialog', (dialog) => {

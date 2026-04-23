@@ -26,7 +26,7 @@ export default defineConfig({
     ['dot'],
     ['junit', { outputFile: 'result-xml' }],
     ['junit', { outputFile: 'result-json' }],
-    ['html', { open: 'always' }],
+    ['html', { open: 'on-failure' }],
     ['allure-playwright']
   ],
 
@@ -47,10 +47,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
       //fullyParallel: false, // we can specifi the parallel excution  or serial
     },
-      {
-       name: 'firefox',
-       use: { ...devices['Desktop Firefox'] },
-      },
+   //  {
+     //  name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+//},
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
