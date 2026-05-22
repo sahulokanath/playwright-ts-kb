@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Playwright Practice Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --card: #161d2e;
+    --border: #1e293b;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code: #0ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,14,26,.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-brand {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent);
+    white-space: nowrap;
+    padding: 1rem 0;
+    margin-right: 1rem;
+    letter-spacing: -0.5px;
+  }
+  .nav-brand span { color: var(--accent2); }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+    padding: .4rem .7rem;
+    border-radius: 6px;
+    transition: all .2s;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .5px;
+  }
+  nav a:hover { color: var(--accent); background: rgba(0,212,255,.08); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(0,212,255,.1);
+    border: 1px solid rgba(0,212,255,.3);
+    color: var(--accent);
+    font-size: .72rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 2px;
+    padding: .3rem 1rem;
+    border-radius: 99px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* ── SECTION CARD ── */
+  .section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color .3s;
+  }
+  .section-card:hover { border-color: rgba(0,212,255,.25); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255,255,255,.02);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .section-badge {
+    margin-left: auto;
+    font-size: .65rem;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(0,212,255,.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,.2);
+    padding: .2rem .6rem;
+    border-radius: 99px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .section-body { padding: 1.5rem; }
+
+  /* ── SHARED INPUTS ── */
+  input, select, textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+    padding: .55rem .9rem;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,.12);
+  }
+  select option { background: var(--surface); }
+
+  label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: .4rem;
+    letter-spacing: .5px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+  }
+
+  .field { display: flex; flex-direction: column; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .55rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .2s;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn-primary:hover { background: #00b8d9; box-shadow: 0 0 20px rgba(0,212,255,.3); }
+  .btn-secondary { background: transparent; color: var(--accent); border-color: var(--accent); }
+  .btn-secondary:hover { background: rgba(0,212,255,.1); }
+  .btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-success { background: var(--accent3); color: #000; border-color: var(--accent3); }
+  .btn-success:hover { background: #059669; }
+  .btn-warning { background: var(--accent4); color: #000; border-color: var(--accent4); }
+  .btn-warning:hover { background: #d97706; }
+  .btn-purple { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+  .btn-purple:hover { background: #6d28d9; }
+  .btn-sm { padding: .35rem .8rem; font-size: .72rem; }
+  .btn-lg { padding: .75rem 2rem; font-size: .9rem; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── OUTPUT BOX ── */
+  .output-box {
+    margin-top: 1rem;
+    padding: .8rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    color: var(--accent3);
+    min-height: 36px;
+    word-break: break-all;
+    transition: all .3s;
+  }
+  .output-box.error { color: var(--danger); border-color: rgba(239,68,68,.3); }
+  .output-box.warn { color: var(--accent4); }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+  .flex-row { display: flex; gap: .75rem; flex-wrap: wrap; align-items: flex-end; }
+  .flex-col { display: flex; flex-direction: column; gap: .75rem; }
+
+  @media(max-width:640px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* ════════════════════════════════════
+     1. DROPDOWNS
+  ════════════════════════════════════ */
+  #dropdown-section .select-wrap { position: relative; width: 100%; }
+  #dropdown-section select { width: 100%; }
+
+  .cascading-row { display: flex; gap: .75rem; flex-wrap: wrap; }
+  .cascading-row .field { flex: 1; min-width: 140px; }
+
+  /* ════════════════════════════════════
+     2. ALERTS / DIALOGS
+  ════════════════════════════════════ */
+  .alert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: .75rem; }
+
+  /* custom modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(6px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(0,212,255,.2);
+    animation: popIn .25s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(.85); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .modal-box h3 { font-size: 1.1rem; margin-bottom: .75rem; color: var(--accent); }
+  .modal-box p  { color: var(--muted); font-size: .9rem; margin-bottom: 1.25rem; line-height: 1.6; }
+  .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; }
+
+  /* ════════════════════════════════════
+     3. TABLES
+  ════════════════════════════════════ */
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: rgba(0,212,255,.06); }
+  th {
+    text-align: left;
+    padding: .75rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: .7rem 1rem;
+    font-size: .85rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background .15s; }
+  tbody tr:hover { background: rgba(255,255,255,.03); }
+  .badge-pill {
+    display: inline-flex; align-items: center;
+    padding: .2rem .6rem;
+    border-radius: 99px;
+    font-size: .7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+  .pill-green  { background: rgba(16,185,129,.15); color: #10b981; }
+  .pill-red    { background: rgba(239,68,68,.15);  color: #ef4444; }
+  .pill-yellow { background: rgba(245,158,11,.15); color: #f59e0b; }
+  .pill-blue   { background: rgba(0,212,255,.12);  color: var(--accent); }
+
+  .sort-btn {
+    background: none; border: none; color: var(--accent);
+    cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem; letter-spacing: 1px; text-transform: uppercase;
+    display: flex; align-items: center; gap: .3rem; padding: 0;
+  }
+  .sort-btn:hover { color: #fff; }
+
+  /* ════════════════════════════════════
+     4. DYNAMIC TABLE
+  ════════════════════════════════════ */
+  #dynamic-table-controls { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+  /* ════════════════════════════════════
+     5. PAGINATION
+  ════════════════════════════════════ */
+  .pagination {
+    display: flex; gap: .4rem; flex-wrap: wrap;
+    align-items: center; margin-top: 1rem;
+  }
+  .page-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+  .page-btn:disabled { opacity: .3; cursor: not-allowed; }
+  .page-info {
+    font-size: .78rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    margin-left: .5rem;
+  }
+
+  /* ════════════════════════════════════
+     6. FORMS
+  ════════════════════════════════════ */
+  .form-group { display: flex; flex-direction: column; gap: .4rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px) { .form-grid { grid-template-columns: 1fr; } }
+
+  .checkbox-row { display: flex; align-items: center; gap: .5rem; cursor: pointer; }
+  .checkbox-row input[type=checkbox] {
+    width: 16px; height: 16px; accent-color: var(--accent);
+    padding: 0; cursor: pointer;
+  }
+  .checkbox-row span { font-size: .85rem; color: var(--text); }
+
+  .radio-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .radio-row { display: flex; align-items: center; gap: .4rem; cursor: pointer; }
+  .radio-row input[type=radio] { accent-color: var(--accent); width:15px; height:15px; padding:0; }
+  .radio-row span { font-size: .85rem; }
+
+  .error-msg {
+    font-size: .75rem;
+    color: var(--danger);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 1rem;
+  }
+
+  /* strength bar */
+  .strength-bar-wrap { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; margin-top: .3rem; }
+  .strength-bar { height: 100%; border-radius: 3px; transition: width .4s, background .4s; width: 0%; }
+
+  /* ════════════════════════════════════
+     7. DYNAMIC ELEMENTS
+  ════════════════════════════════════ */
+  .dyn-target {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+    transition: all .4s;
+    font-size: .85rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .spinner {
+    width: 24px; height: 24px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+    height: 14px;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  .fade-in { animation: fadeIn .5s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ════════════════════════════════════
+     8. DRAG & DROP
+  ════════════════════════════════════ */
+  .drag-list {
+    display: flex; flex-direction: column; gap: .5rem;
+    min-height: 60px;
+  }
+  .drag-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .7rem 1rem;
+    cursor: grab;
+    display: flex; align-items: center; gap: .75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    transition: all .2s;
+    user-select: none;
+  }
+  .drag-item:hover { border-color: var(--accent); }
+  .drag-item.dragging { opacity: .4; cursor: grabbing; }
+  .drag-item.drag-over { background: rgba(0,212,255,.08); border-color: var(--accent); border-style: dashed; }
+  .drag-handle { color: var(--muted); font-size: 1rem; }
+
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    color: var(--muted);
+    transition: all .2s;
+    min-height: 100px;
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .5rem;
+  }
+  .drop-zone.drag-over-zone { border-color: var(--accent); background: rgba(0,212,255,.05); color: var(--accent); }
+
+  /* ════════════════════════════════════
+     9. IFRAME / FRAMES
+  ════════════════════════════════════ */
+  iframe {
+    width: 100%; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  /* ════════════════════════════════════
+     10. HOVER / TOOLTIP
+  ════════════════════════════════════ */
+  .tooltip-wrap { position: relative; display: inline-flex; }
+  .tooltip-tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%);
+    background: #1e293b;
+    color: var(--text);
+    font-size: .72rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: .35rem .7rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+    z-index: 50;
+  }
+  .tooltip-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border);
+  }
+  .tooltip-wrap:hover .tooltip-tip { opacity: 1; }
+
+  /* ════════════════════════════════════
+     11. FILE UPLOAD
+  ════════════════════════════════════ */
+  .file-drop {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    color: var(--muted);
+  }
+  .file-drop:hover, .file-drop.dragover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,.04); }
+  .file-drop input[type=file] { display: none; }
+
+  /* ════════════════════════════════════
+     12. TABS
+  ════════════════════════════════════ */
+  .tab-header {
+    display: flex; gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-header::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    padding: .65rem 1.2rem;
+    background: none; border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem; font-weight: 700;
+    color: var(--muted); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s; white-space: nowrap;
+    letter-spacing: .5px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn .25s ease; }
+
+  /* ════════════════════════════════════
+     13. SLIDERS / RANGE
+  ════════════════════════════════════ */
+  input[type=range] {
+    -webkit-appearance: none; width: 100%;
+    background: transparent; border: none; padding: 0;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 6px; border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) var(--pct, 50%), var(--border) var(--pct, 50%));
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    margin-top: -6px;
+    box-shadow: 0 0 8px rgba(0,212,255,.4);
+  }
+  input[type=range]:focus { outline: none; }
+
+  /* ════════════════════════════════════
+     14. INFINITE SCROLL
+  ════════════════════════════════════ */
+  .infinite-list {
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .infinite-item {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .infinite-item:last-child { border-bottom: none; }
+  .inf-num {
+    color: var(--accent); font-weight: 700; min-width: 2rem;
+  }
+  #inf-loader {
+    text-align: center; padding: 1rem;
+    font-size: .78rem; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    display: none;
+  }
+
+  /* ════════════════════════════════════
+     15. COUNTDOWN / TIMER
+  ════════════════════════════════════ */
+  .countdown-display {
+    font-size: 3rem; font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    letter-spacing: .1em;
+    text-align: center;
+    padding: 1rem 0;
+  }
+  .progress-bar-wrap {
+    height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+    margin: .5rem 0 1rem;
+  }
+  .progress-bar {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width .5s linear;
+    width: 100%;
+  }
+
+  /* ════════════════════════════════════
+     16. MULTI-STEP FORM
+  ════════════════════════════════════ */
+  .stepper {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 1.5rem; overflow-x: auto;
+  }
+  .step {
+    display: flex; align-items: center; gap: 0;
+    flex: 1; min-width: 0;
+  }
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    flex-shrink: 0;
+    transition: all .3s;
+    color: var(--muted);
+  }
+  .step.active .step-dot { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px rgba(0,212,255,.3); }
+  .step.done .step-dot { background: var(--accent); border-color: var(--accent); color: #000; }
+  .step-line { flex: 1; height: 2px; background: var(--border); transition: background .3s; }
+  .step.done .step-line { background: var(--accent); }
+  .step-label {
+    position: absolute;
+    font-size: .65rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); white-space: nowrap;
+    top: 36px; left: 50%; transform: translateX(-50%);
+  }
+  .step-dot-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
+
+  .wizard-page { display: none; }
+  .wizard-page.active { display: block; animation: fadeIn .25s ease; }
+
+  /* ════════════════════════════════════
+     MISC
+  ════════════════════════════════════ */
+  .chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(124,58,237,.15);
+    border: 1px solid rgba(124,58,237,.3);
+    color: #a78bfa;
+    border-radius: 99px;
+    padding: .2rem .75rem;
+    font-size: .72rem;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .chip:hover { background: rgba(124,58,237,.3); }
+  .chip .x { font-weight: 700; font-size: .9rem; line-height: 1; }
+
+  .tag-input-wrap { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .4rem .6rem; }
+  .tag-input-wrap input { background: none; border: none; box-shadow: none; flex: 1; min-width: 80px; padding: .2rem .4rem; font-size: .82rem; }
+  .tag-input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,.1); }
+
+  /* color boxes */
+  .color-swatch { width: 32px; height: 32px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; }
+
+  /* ════════════════════════════════════
+     SECTION DIVIDER
+  ════════════════════════════════════ */
+  .divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: .5rem 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ NAV ══════ -->
+<nav>
+  <div class="nav-brand">PW<span>Lab</span></div>
+  <a href="#dropdowns">Dropdowns</a>
+  <a href="#alerts">Alerts</a>
+  <a href="#tables">Tables</a>
+  <a href="#dynamic-table">Dyn-Table</a>
+  <a href="#pagination">Pagination</a>
+  <a href="#forms">Forms</a>
+  <a href="#multistep">Multi-Step</a>
+  <a href="#dynamic">Dynamic</a>
+  <a href="#drag">Drag&Drop</a>
+  <a href="#tabs">Tabs</a>
+  <a href="#sliders">Sliders</a>
+  <a href="#file">File Upload</a>
+  <a href="#hover">Hover/Tips</a>
+  <a href="#infinite">Infinite</a>
+  <a href="#timer">Timer</a>
+  <a href="#shadow">Shadow DOM</a>
+  <a href="#iframe">iFrame</a>
+  <a href="#network">Network</a>
+</nav>
+
+<!-- ══════ HERO ══════ -->
+<div class="hero">
+  <div class="hero-tag">🎭 Playwright Practice Laboratory</div>
+  <h1>Master Every<br/>Automation Scenario</h1>
+  <p>Every element, interaction, and edge-case you'll encounter in real-world Playwright automation — all in one place.</p>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════
+       1. DROPDOWNS
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="dropdowns">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,.12)">🔽</div>
+      <div class="section-title">Dropdowns &amp; Selects</div>
+      <div class="section-badge">locator.selectOption()</div>
+    </div>
+    <div class="section-body flex-col">
+
+      <!-- Simple -->
+      <div class="field">
+        <label>Simple Select</label>
+        <select id="simple-select" data-testid="simple-select">
+          <option value="">-- Choose a framework --</option>
+          <option value="playwright">Playwright</option>
+          <option value="cypress">Cypress</option>
+          <option value="selenium">Selenium</option>
+          <option value="webdriverio">WebDriverIO</option>
+          <option value="puppeteer">Puppeteer</option>
+        </select>
+      </div>
+      <div class="output-box" id="simple-select-out">Selected: none</div>
+
+      <div class="divider"></div>
+
+      <!-- Multi-select -->
+      <div class="field">
+        <label>Multi-Select (hold Ctrl/Cmd)</label>
+        <select id="multi-select" data-testid="multi-select" multiple size="5" style="height:auto">
+          <option value="ts">TypeScript</option>
+          <option value="js">JavaScript</option>
+          <option value="py">Python</option>
+          <option value="java">Java</option>
+          <option value="csharp">C#</option>
+        </select>
+      </div>
+      <div class="output-box" id="multi-select-out">Selected: none</div>
+
+      <div class="divider"></div>
+
+      <!-- Cascading -->
+      <label style="margin-bottom:.5rem">Cascading Dropdowns (Country → City)</label>
+      <div class="cascading-row">
+        <div class="field">
+          <label>Country</label>
+          <select id="country-select" data-testid="country-select">
+            <option value="">Select Country</option>
+            <option value="in">India</option>
+            <option value="us">USA</option>
+            <option value="uk">UK</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>City</label>
+          <select id="city-select" data-testid="city-select" disabled>
+            <option value="">Select City</option>
+          </select>
+        </div>
+      </div>
+      <div class="output-box" id="cascade-out">Select a country first</div>
+
+      <div class="divider"></div>
+
+      <!-- Dynamic options -->
+      <div class="flex-row">
+        <button class="btn btn-secondary" onclick="addDynOption()">➕ Add Option</button>
+        <button class="btn btn-danger btn-sm" onclick="removeDynOption()">➖ Remove Last</button>
+        <div class="field" style="flex:1;min-width:120px">
+          <label>Dynamic Select</label>
+          <select id="dynamic-select" data-testid="dynamic-select" style="width:100%">
+            <option value="">-- empty --</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       2. ALERTS / DIALOGS
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="alerts">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,.12)">⚠️</div>
+      <div class="section-title">Alerts, Confirms &amp; Prompts</div>
+      <div class="section-badge">page.on('dialog')</div>
+    </div>
+    <div class="section-body flex-col">
+      <div class="alert-grid">
+        <button class="btn btn-warning" onclick="triggerAlert()" data-testid="btn-alert">window.alert()</button>
+        <button class="btn btn-secondary" onclick="triggerConfirm()" data-testid="btn-confirm">window.confirm()</button>
+        <button class="btn btn-purple" onclick="triggerPrompt()" data-testid="btn-prompt">window.prompt()</button>
+        <button class="btn btn-danger" onclick="triggerBeforeUnload()" data-testid="btn-beforeunload">beforeunload</button>
+        <button class="btn btn-success" onclick="openCustomModal()" data-testid="btn-custom-modal">Custom Modal</button>
+        <button class="btn btn-primary" onclick="openNestedModal()" data-testid="btn-nested-modal">Nested Modal</button>
+      </div>
+      <div class="output-box" id="dialog-out">No dialog triggered yet</div>
+    </div>
+  </div>
+
+  <!-- Custom Modal -->
+  <div class="modal-overlay" id="custom-modal">
+    <div class="modal-box" data-testid="custom-modal-box">
+      <h3>🎭 Custom Dialog</h3>
+      <p>This is a custom modal dialog. In Playwright you'd use <code style="color:var(--accent)">page.getByRole('dialog')</code> or locate by <code style="color:var(--accent)">data-testid</code>.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('custom-modal')" data-testid="modal-cancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="modalConfirm()" data-testid="modal-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nested Modal -->
+  <div class="modal-overlay" id="nested-modal">
+    <div class="modal-box" data-testid="nested-modal-box">
+      <h3>🪆 Outer Modal</h3>
+      <p>This modal contains a button that opens a second nested modal inside it.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('nested-modal')">Close</button>
+        <button class="btn btn-warning btn-sm" onclick="openInnerModal()" data-testid="open-inner-modal">Open Inner</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="inner-modal">
+    <div class="modal-box" data-testid="inner-modal-box" style="max-width:320px">
+      <h3>📦 Inner Modal</h3>
+      <p>The innermost modal. Close both to return.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-sm" onclick="closeModal('inner-modal')" data-testid="close-inner">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       3. STATIC TABLE
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="tables">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,.12)">📊</div>
+      <div class="section-title">Static Table (Sortable)</div>
+      <div class="section-badge">getByRole('row')</div>
+    </div>
+    <div class="section-body">
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+        <input id="table-search" placeholder="Search table…" style="flex:1;min-width:140px" data-testid="table-search" oninput="filterTable()" />
+        <span class="page-info" id="table-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="static-table" data-testid="static-table">
+          <thead>
+            <tr>
+              <th><button class="sort-btn" onclick="sortTable(0)">ID ⇅</button></th>
+              <th><button class="sort-btn" onclick="sortTable(1)">Name ⇅</button></th>
+              <th><button class="sort-btn" onclick="sortTable(2)">Role ⇅</button></th>
+              <th><button class="sort-btn" onclick="sortTable(3)">Status ⇅</button></th>
+              <th><button class="sort-btn" onclick="sortTable(4)">Score ⇅</button></th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="static-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       4. DYNAMIC TABLE
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="dynamic-table">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,58,237,.12)">🔄</div>
+      <div class="section-title">Dynamic Table (Add / Edit / Delete)</div>
+      <div class="section-badge">Dynamic DOM</div>
+    </div>
+    <div class="section-body">
+      <div id="dynamic-table-controls">
+        <input id="dyn-name" placeholder="Name" data-testid="dyn-name" style="width:130px" />
+        <input id="dyn-email" placeholder="Email" data-testid="dyn-email" style="width:170px" />
+        <select id="dyn-role" data-testid="dyn-role" style="width:120px">
+          <option value="QA">QA</option>
+          <option value="Dev">Dev</option>
+          <option value="PM">PM</option>
+          <option value="DevOps">DevOps</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addDynRow()" data-testid="btn-add-row">➕ Add Row</button>
+        <button class="btn btn-danger btn-sm" onclick="clearDynTable()" data-testid="btn-clear-table">🗑 Clear</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+          <tbody id="dyn-tbody" data-testid="dyn-tbody"></tbody>
+        </table>
+      </div>
+      <div class="output-box" id="dyn-out">Table is empty</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       5. PAGINATION
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="pagination">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,.12)">📑</div>
+      <div class="section-title">Paginated Table</div>
+      <div class="section-badge">page navigation</div>
+    </div>
+    <div class="section-body">
+      <div class="flex-row" style="margin-bottom:1rem;align-items:center">
+        <div class="field">
+          <label>Rows per page</label>
+          <select id="page-size" data-testid="page-size" onchange="renderPage(1)">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <span class="page-info" id="pag-info" style="margin-top:1.2rem"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead>
+          <tbody id="pag-tbody" data-testid="pag-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pag-controls" data-testid="pagination-controls"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       6. FORMS
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="forms">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,.12)">📝</div>
+      <div class="section-title">Rich Form with Validation</div>
+      <div class="section-badge">fill() / check() / type()</div>
+    </div>
+    <div class="section-body">
+      <div class="flex-col" style="gap:1.2rem">
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name *</label>
+            <input id="f-fname" data-testid="input-fname" placeholder="Lokanath" oninput="validateField(this)" />
+            <div class="error-msg" id="err-fname"></div>
+          </div>
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input id="f-lname" data-testid="input-lname" placeholder="Sahu" oninput="validateField(this)" />
+            <div class="error-msg" id="err-lname"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email *</label>
+          <input id="f-email" type="email" data-testid="input-email" placeholder="qa@example.com" oninput="validateEmail()" />
+          <div class="error-msg" id="err-email"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Password *</label>
+          <input id="f-pass" type="password" data-testid="input-password" placeholder="Min 8 chars" oninput="checkStrength()" />
+          <div class="strength-bar-wrap"><div class="strength-bar" id="strength-bar"></div></div>
+          <div class="error-msg" id="err-pass" style="color:var(--muted)">Strength: —</div>
+        </div>
+
+        <div class="form-group">
+          <label>Phone</label>
+          <input id="f-phone" type="tel" data-testid="input-phone" placeholder="+91 9876543210" />
+        </div>
+
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input id="f-dob" type="date" data-testid="input-dob" />
+        </div>
+
+        <div class="form-group">
+          <label>Experience Level</label>
+          <div class="radio-group" data-testid="radio-experience">
+            <label class="radio-row"><input type="radio" name="exp" value="junior" data-testid="radio-junior"/><span>Junior (0–2 yrs)</span></label>
+            <label class="radio-row"><input type="radio" name="exp" value="mid" data-testid="radio-mid" checked/><span>Mid (2–5 yrs)</span></label>
+            <label class="radio-row"><input type="radio" name="exp" value="senior" data-testid="radio-senior"/><span>Senior (5+ yrs)</span></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Skills</label>
+          <div class="tag-input-wrap" id="tag-wrap">
+            <input id="tag-input" data-testid="tag-input" placeholder="Type skill & press Enter" onkeydown="addTag(event)" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Bio / Notes</label>
+          <textarea id="f-bio" data-testid="input-bio" rows="3" placeholder="Tell us about your automation experience…" style="resize:vertical;width:100%"></textarea>
+          <div style="font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:.25rem" id="bio-count">0 / 300</div>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="f-agree" data-testid="checkbox-agree" />
+          <span>I agree to the Terms &amp; Conditions</span>
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="f-newsletter" data-testid="checkbox-newsletter" checked />
+          <span>Subscribe to QA newsletter</span>
+        </label>
+
+        <div class="flex-row">
+          <button class="btn btn-primary btn-lg" onclick="submitForm()" data-testid="btn-submit-form">Submit Form</button>
+          <button class="btn btn-secondary" onclick="resetForm()" data-testid="btn-reset-form">Reset</button>
+        </div>
+
+        <div class="output-box" id="form-out" style="display:none"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       7. MULTI-STEP FORM (WIZARD)
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="multistep">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,58,237,.12)">🧙</div>
+      <div class="section-title">Multi-Step Wizard Form</div>
+      <div class="section-badge">step navigation</div>
+    </div>
+    <div class="section-body">
+
+      <!-- Stepper -->
+      <div class="stepper" data-testid="wizard-stepper">
+        <div class="step active" id="step-1">
+          <div class="step-dot-wrap">
+            <div class="step-dot" data-testid="step-dot-1">1</div>
+          </div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step" id="step-2">
+          <div class="step-dot-wrap">
+            <div class="step-dot" data-testid="step-dot-2">2</div>
+          </div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step" id="step-3">
+          <div class="step-dot-wrap">
+            <div class="step-dot" data-testid="step-dot-3">3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pages -->
+      <div class="wizard-page active" id="wizard-p1" data-testid="wizard-page-1">
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label>Full Name</label>
+          <input id="w-name" data-testid="wizard-name" placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input id="w-company" data-testid="wizard-company" placeholder="e.g. KreditBee" />
+        </div>
+      </div>
+
+      <div class="wizard-page" id="wizard-p2" data-testid="wizard-page-2">
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label>Tool Preference</label>
+          <select id="w-tool" data-testid="wizard-tool" style="width:100%">
+            <option value="playwright">Playwright</option>
+            <option value="cypress">Cypress</option>
+            <option value="selenium">Selenium</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Years of Experience</label>
+          <input id="w-exp" data-testid="wizard-exp" type="number" min="0" max="30" placeholder="4" />
+        </div>
+      </div>
+
+      <div class="wizard-page" id="wizard-p3" data-testid="wizard-page-3">
+        <div class="output-box" id="wizard-summary" style="min-height:80px;white-space:pre-line"></div>
+      </div>
+
+      <div class="flex-row" style="margin-top:1.25rem">
+        <button class="btn btn-secondary" id="wizard-back" onclick="wizardNav(-1)" data-testid="wizard-back" disabled>← Back</button>
+        <button class="btn btn-primary" id="wizard-next" onclick="wizardNav(1)" data-testid="wizard-next">Next →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       8. DYNAMIC ELEMENTS
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="dynamic">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,.12)">⚡</div>
+      <div class="section-title">Dynamic / Async Elements</div>
+      <div class="section-badge">waitFor / expect</div>
+    </div>
+    <div class="section-body flex-col">
+
+      <!-- Delayed element -->
+      <div class="flex-row">
+        <button class="btn btn-primary" onclick="showDelayed(1000)" data-testid="btn-delay-1s">Show after 1s</button>
+        <button class="btn btn-secondary" onclick="showDelayed(3000)" data-testid="btn-delay-3s">Show after 3s</button>
+        <button class="btn btn-warning" onclick="showDelayed(5000)" data-testid="btn-delay-5s">Show after 5s</button>
+        <button class="btn btn-danger btn-sm" onclick="hideDelayed()" data-testid="btn-hide">Hide</button>
+      </div>
+      <div class="dyn-target" id="delayed-box" data-testid="delayed-box">
+        <div class="spinner" id="spinner1"></div>
+        <span id="delayed-text">Waiting…</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Skeleton loader -->
+      <div class="flex-row">
+        <button class="btn btn-purple" onclick="loadContent()" data-testid="btn-load-content">Load Content (Skeleton)</button>
+      </div>
+      <div id="skeleton-area" data-testid="skeleton-area">
+        <div class="dyn-target">Click button to load</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Toggle visibility -->
+      <div class="flex-row">
+        <button class="btn btn-secondary" onclick="toggleElement()" data-testid="btn-toggle">Toggle Element</button>
+        <span style="font-size:.8rem;color:var(--muted);font-family:'JetBrains Mono',monospace">→ toBeVisible() / toBeHidden()</span>
+      </div>
+      <div id="toggle-box" data-testid="toggle-box" style="background:rgba(0,212,255,.08);border:1px solid var(--accent);border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent)">
+        👁 I am visible! playwright can see me.
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Changing text -->
+      <div class="flex-row">
+        <button class="btn btn-success" onclick="startChanging()" data-testid="btn-start-change">Start Changing Text</button>
+        <button class="btn btn-danger btn-sm" onclick="stopChanging()" data-testid="btn-stop-change">Stop</button>
+      </div>
+      <div class="dyn-target" id="changing-text" data-testid="changing-text">Click Start to begin…</div>
+
+      <div class="divider"></div>
+
+      <!-- Enabled / Disabled toggle -->
+      <div class="flex-row">
+        <button class="btn btn-warning" onclick="toggleDisable()" data-testid="btn-toggle-disable">Toggle Disabled State</button>
+        <input id="disable-input" data-testid="disable-input" placeholder="I can be disabled" style="flex:1;min-width:140px" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       9. DRAG & DROP
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="drag">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,.12)">🖱️</div>
+      <div class="section-title">Drag &amp; Drop</div>
+      <div class="section-badge">dragAndDrop()</div>
+    </div>
+    <div class="section-body">
+      <div class="grid-2" style="gap:1.5rem">
+        <div>
+          <label style="margin-bottom:.75rem;display:block">Sortable List (drag to reorder)</label>
+          <div class="drag-list" id="drag-list" data-testid="drag-list">
+            <div class="drag-item" draggable="true" data-testid="drag-item-1"><span class="drag-handle">⠿</span>🧪 Write Test Cases</div>
+            <div class="drag-item" draggable="true" data-testid="drag-item-2"><span class="drag-handle">⠿</span>🔧 Setup Playwright</div>
+            <div class="drag-item" draggable="true" data-testid="drag-item-3"><span class="drag-handle">⠿</span>🚀 Run Pipeline</div>
+            <div class="drag-item" draggable="true" data-testid="drag-item-4"><span class="drag-handle">⠿</span>📊 Generate Report</div>
+            <div class="drag-item" draggable="true" data-testid="drag-item-5"><span class="drag-handle">⠿</span>🐛 Fix Flaky Tests</div>
+          </div>
+        </div>
+        <div class="flex-col" style="gap:1rem">
+          <label>Drop Zone (drag items here)</label>
+          <div class="drop-zone" id="drop-zone" data-testid="drop-zone">
+            <span>🎯</span>
+            <span>Drop items here</span>
+          </div>
+          <div class="output-box" id="drag-out">No items dropped yet</div>
+          <button class="btn btn-secondary btn-sm" onclick="clearDropZone()">Clear Drop Zone</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       10. TABS
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="tabs">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,.12)">🗂</div>
+      <div class="section-title">Tabs &amp; Accordions</div>
+      <div class="section-badge">getByRole('tab')</div>
+    </div>
+    <div class="section-body">
+      <div class="tab-header" data-testid="tab-header">
+        <button class="tab-btn active" onclick="switchTab('locators')" data-testid="tab-locators">Locators</button>
+        <button class="tab-btn" onclick="switchTab('assertions')" data-testid="tab-assertions">Assertions</button>
+        <button class="tab-btn" onclick="switchTab('actions')" data-testid="tab-actions">Actions</button>
+        <button class="tab-btn" onclick="switchTab('network')" data-testid="tab-network-panel">Network</button>
+        <button class="tab-btn" onclick="switchTab('config')" data-testid="tab-config">Config</button>
+      </div>
+
+      <div class="tab-panel active" id="panel-locators" data-testid="panel-locators">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);line-height:1.8">
+          <span style="color:var(--accent)">page.getByRole()</span> — ARIA role based<br>
+          <span style="color:var(--accent)">page.getByText()</span> — visible text<br>
+          <span style="color:var(--accent)">page.getByLabel()</span> — form label<br>
+          <span style="color:var(--accent)">page.getByPlaceholder()</span> — input placeholder<br>
+          <span style="color:var(--accent)">page.getByTestId()</span> — data-testid attr<br>
+          <span style="color:var(--accent)">page.locator('css')</span> — CSS selector
+        </p>
+      </div>
+      <div class="tab-panel" id="panel-assertions" data-testid="panel-assertions">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);line-height:1.8">
+          <span style="color:var(--accent3)">expect(locator).toBeVisible()</span><br>
+          <span style="color:var(--accent3)">expect(locator).toHaveText()</span><br>
+          <span style="color:var(--accent3)">expect(locator).toHaveValue()</span><br>
+          <span style="color:var(--accent3)">expect(locator).toBeChecked()</span><br>
+          <span style="color:var(--accent3)">expect(locator).toBeDisabled()</span><br>
+          <span style="color:var(--accent3)">expect(page).toHaveURL()</span>
+        </p>
+      </div>
+      <div class="tab-panel" id="panel-actions" data-testid="panel-actions">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);line-height:1.8">
+          <span style="color:var(--accent4)">locator.click()</span><br>
+          <span style="color:var(--accent4)">locator.fill()</span><br>
+          <span style="color:var(--accent4)">locator.type()</span><br>
+          <span style="color:var(--accent4)">locator.hover()</span><br>
+          <span style="color:var(--accent4)">locator.dragTo()</span><br>
+          <span style="color:var(--accent4)">locator.selectOption()</span>
+        </p>
+      </div>
+      <div class="tab-panel" id="panel-network-panel" data-testid="panel-network-panel">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);line-height:1.8">
+          <span style="color:var(--accent2)">page.route(url, handler)</span> — intercept<br>
+          <span style="color:var(--accent2)">route.fulfill({body})</span> — mock response<br>
+          <span style="color:var(--accent2)">page.waitForResponse()</span> — wait API<br>
+          <span style="color:var(--accent2)">page.waitForRequest()</span> — wait request<br>
+          <span style="color:var(--accent2)">page.on('request', cb)</span> — listen<br>
+          <span style="color:var(--accent2)">route.abort()</span> — block request
+        </p>
+      </div>
+      <div class="tab-panel" id="panel-config" data-testid="panel-config">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--muted);line-height:1.8">
+          <span style="color:var(--danger)">playwright.config.ts</span> settings:<br>
+          timeout, retries, workers, reporter<br>
+          baseURL, headless, slowMo<br>
+          storageState, use.viewport<br>
+          projects (chromium/firefox/webkit)<br>
+          testDir, testMatch, globalSetup
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       11. SLIDERS & RANGE
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="sliders">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,.12)">🎚️</div>
+      <div class="section-title">Sliders &amp; Range Inputs</div>
+      <div class="section-badge">evaluate / dispatchEvent</div>
+    </div>
+    <div class="section-body flex-col" style="gap:1.25rem">
+      <div class="form-group">
+        <label>Single Range — <span id="slider1-val" style="color:var(--accent)">50</span></label>
+        <input type="range" id="slider1" data-testid="slider1" min="0" max="100" value="50" oninput="updateSlider(this,'slider1-val')" />
+      </div>
+      <div class="form-group">
+        <label>Speed (0–200ms) — <span id="slider2-val" style="color:var(--accent)">100</span>ms</label>
+        <input type="range" id="slider2" data-testid="slider2" min="0" max="200" step="10" value="100" oninput="updateSlider(this,'slider2-val')" />
+      </div>
+      <div class="form-group">
+        <label>Opacity — <span id="slider3-val" style="color:var(--accent)">100</span>%</label>
+        <input type="range" id="slider3" data-testid="slider3" min="0" max="100" value="100" oninput="updateSlider(this,'slider3-val'); updateOpacity(this)" />
+        <div id="opacity-box" style="margin-top:.5rem;background:var(--accent);height:40px;border-radius:8px;transition:opacity .2s"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       12. FILE UPLOAD
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="file">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,.12)">📎</div>
+      <div class="section-title">File Upload</div>
+      <div class="section-badge">setInputFiles()</div>
+    </div>
+    <div class="section-body flex-col">
+      <div class="file-drop" id="file-drop-zone" data-testid="file-drop-zone"
+           onclick="document.getElementById('file-input').click()"
+           ondragover="fileDragOver(event)" ondragleave="fileDragLeave(event)" ondrop="fileDrop(event)">
+        <input type="file" id="file-input" data-testid="file-input" multiple accept=".pdf,.png,.jpg,.csv,.json" onchange="fileSelected(this)" />
+        <div>📁 Click or drag files here</div>
+        <div style="font-size:.7rem;opacity:.6">Accepts: PDF, PNG, JPG, CSV, JSON</div>
+      </div>
+      <div class="output-box" id="file-out">No files selected</div>
+      <div id="file-preview" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       13. HOVER / TOOLTIP
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="hover">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,58,237,.12)">💬</div>
+      <div class="section-title">Hover &amp; Tooltips</div>
+      <div class="section-badge">hover() / mouse.move()</div>
+    </div>
+    <div class="section-body">
+      <div class="flex-row" style="flex-wrap:wrap;gap:1.5rem;align-items:flex-start">
+        <div class="tooltip-wrap" data-testid="tooltip-1">
+          <button class="btn btn-primary" data-testid="hover-btn-1">Hover me 🔵</button>
+          <div class="tooltip-tip" data-testid="tooltip-tip-1">getByRole('button') — primary action</div>
+        </div>
+        <div class="tooltip-wrap" data-testid="tooltip-2">
+          <button class="btn btn-success" data-testid="hover-btn-2">Hover me 🟢</button>
+          <div class="tooltip-tip" data-testid="tooltip-tip-2">expect(locator).toBeVisible()</div>
+        </div>
+        <div class="tooltip-wrap" data-testid="tooltip-3">
+          <button class="btn btn-warning" data-testid="hover-btn-3">Hover me 🟡</button>
+          <div class="tooltip-tip" data-testid="tooltip-tip-3">page.mouse.move(x, y)</div>
+        </div>
+        <div class="tooltip-wrap" data-testid="tooltip-4">
+          <button class="btn btn-danger" data-testid="hover-btn-4">Hover me 🔴</button>
+          <div class="tooltip-tip" data-testid="tooltip-tip-4">locator.hover({force: true})</div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin:1.25rem 0"></div>
+
+      <!-- Context menu -->
+      <label style="margin-bottom:.75rem;display:block">Right-click Target (context menu)</label>
+      <div id="ctx-target" data-testid="context-menu-target"
+           style="background:rgba(124,58,237,.08);border:1px dashed var(--accent2);border-radius:10px;padding:1.5rem;text-align:center;cursor:context-menu;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent2)"
+           oncontextmenu="showCtxMenu(event)">
+        Right-click here → page.click({button:'right'})
+      </div>
+      <div id="ctx-menu" style="display:none;position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.5rem;z-index:200;min-width:160px">
+        <div onclick="ctxAction('Copy')" style="padding:.5rem .75rem;cursor:pointer;font-size:.82rem;font-family:'JetBrains Mono',monospace;border-radius:6px" onmouseenter="this.style.background='rgba(255,255,255,.05)'" onmouseleave="this.style.background='none'" data-testid="ctx-copy">📋 Copy</div>
+        <div onclick="ctxAction('Inspect')" style="padding:.5rem .75rem;cursor:pointer;font-size:.82rem;font-family:'JetBrains Mono',monospace;border-radius:6px" onmouseenter="this.style.background='rgba(255,255,255,.05)'" onmouseleave="this.style.background='none'" data-testid="ctx-inspect">🔍 Inspect</div>
+        <div onclick="ctxAction('Delete')" style="padding:.5rem .75rem;cursor:pointer;font-size:.82rem;font-family:'JetBrains Mono',monospace;border-radius:6px;color:var(--danger)" onmouseenter="this.style.background='rgba(255,255,255,.05)'" onmouseleave="this.style.background='none'" data-testid="ctx-delete">🗑 Delete</div>
+      </div>
+      <div class="output-box" id="ctx-out">No context menu action yet</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       14. INFINITE SCROLL
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="infinite">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,.12)">♾️</div>
+      <div class="section-title">Infinite Scroll</div>
+      <div class="section-badge">scroll / IntersectionObserver</div>
+    </div>
+    <div class="section-body">
+      <div class="infinite-list" id="infinite-list" data-testid="infinite-list">
+        <!-- items inserted by JS -->
+      </div>
+      <div id="inf-loader">Loading more…</div>
+      <div class="output-box" id="inf-out" style="margin-top:.75rem">Scroll the list to load more items</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       15. COUNTDOWN TIMER
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="timer">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,.12)">⏱️</div>
+      <div class="section-title">Countdown Timer (Time-based)</div>
+      <div class="section-badge">waitForTimeout / poll</div>
+    </div>
+    <div class="section-body flex-col" style="align-items:center">
+      <div class="countdown-display" id="countdown-display" data-testid="countdown-display">00:30</div>
+      <div class="progress-bar-wrap" style="width:100%;max-width:400px">
+        <div class="progress-bar" id="countdown-bar"></div>
+      </div>
+      <div class="flex-row" style="justify-content:center">
+        <button class="btn btn-primary" onclick="startTimer()" data-testid="btn-timer-start">▶ Start</button>
+        <button class="btn btn-warning" onclick="pauseTimer()" data-testid="btn-timer-pause">⏸ Pause</button>
+        <button class="btn btn-secondary" onclick="resetTimer()" data-testid="btn-timer-reset">↺ Reset</button>
+      </div>
+      <div class="output-box" id="timer-out" style="width:100%;max-width:400px">Timer ready</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       16. SHADOW DOM
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="shadow">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,58,237,.12)">🌑</div>
+      <div class="section-title">Shadow DOM</div>
+      <div class="section-badge">pierce: / evaluateHandle</div>
+    </div>
+    <div class="section-body flex-col">
+      <p style="font-size:.82rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:.75rem">
+        The element below is inside a Shadow DOM. Playwright automatically pierces shadow roots with standard locators.
+      </p>
+      <div id="shadow-host" data-testid="shadow-host"></div>
+      <div class="output-box" id="shadow-out">No shadow interaction yet</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       17. IFRAME
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="iframe">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,.12)">🖼️</div>
+      <div class="section-title">iFrame</div>
+      <div class="section-badge">frameLocator()</div>
+    </div>
+    <div class="section-body flex-col">
+      <p style="font-size:.82rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:.75rem">
+        Use <code style="color:var(--accent)">page.frameLocator('#my-frame')</code> to interact inside frames.
+      </p>
+      <iframe id="practice-iframe" data-testid="practice-iframe" srcdoc="
+        <html>
+        <head>
+          <style>
+            body { background:#111827; color:#e2e8f0; font-family:monospace; padding:20px; margin:0; }
+            input { background:#1e293b; border:1px solid #334155; color:#e2e8f0; border-radius:6px; padding:6px 10px; font-family:monospace; outline:none; }
+            input:focus { border-color:#00d4ff; }
+            button { background:#00d4ff; color:#000; border:none; border-radius:6px; padding:7px 16px; font-family:monospace; font-weight:700; cursor:pointer; margin-top:8px; }
+            #result { margin-top:10px; color:#10b981; font-size:.85rem; }
+          </style>
+        </head>
+        <body>
+          <div style='color:#00d4ff;font-weight:700;margin-bottom:12px'>🖼 Inside the iFrame</div>
+          <input id='frame-input' data-testid='frame-input' placeholder='Type inside frame…' /><br>
+          <button onclick=&quot;document.getElementById(&apos;result&apos;).innerText = &apos;You typed: &apos; + document.getElementById(&apos;frame-input&apos;).value&quot; data-testid='frame-btn'>Submit</button>
+          <div id='result' data-testid='frame-result'></div>
+        </body>
+        </html>
+      " height="160"></iframe>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       18. NETWORK MOCK / API
+  ═══════════════════════════════════════ -->
+  <div class="section-card" id="network">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,.12)">🌐</div>
+      <div class="section-title">Network / API Simulation</div>
+      <div class="section-badge">page.route() / waitForResponse()</div>
+    </div>
+    <div class="section-body flex-col">
+      <div class="flex-row">
+        <button class="btn btn-primary" onclick="fetchMockData('success')" data-testid="btn-api-success">✅ Mock Success</button>
+        <button class="btn btn-danger" onclick="fetchMockData('error')" data-testid="btn-api-error">❌ Mock Error</button>
+        <button class="btn btn-warning" onclick="fetchMockData('slow')" data-testid="btn-api-slow">⏳ Slow Response</button>
+        <button class="btn btn-secondary" onclick="fetchMockData('empty')" data-testid="btn-api-empty">📭 Empty Data</button>
+      </div>
+      <div class="output-box" id="api-status" data-testid="api-status">Idle</div>
+      <div class="table-wrap" id="api-table-wrap" style="display:none">
+        <table>
+          <thead><tr><th>ID</th><th>User</th><th>Status</th><th>Amount</th></tr></thead>
+          <tbody id="api-tbody" data-testid="api-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       19. KEYBOARD SHORTCUTS
+  ═══════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,.12)">⌨️</div>
+      <div class="section-title">Keyboard Events</div>
+      <div class="section-badge">keyboard.press() / type()</div>
+    </div>
+    <div class="section-body flex-col">
+      <div class="form-group">
+        <label>Key Event Listener (focus &amp; type)</label>
+        <input id="key-input" data-testid="key-input" placeholder="Focus and press any key…"
+               onkeydown="logKey(event)" style="width:100%" />
+      </div>
+      <div class="output-box" id="key-out" style="min-height:80px;white-space:pre-line">Key events will appear here…</div>
+      <div class="flex-row" style="margin-top:.25rem">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('key-out').textContent='Key events will appear here…'" data-testid="btn-clear-keys">Clear</button>
+        <span style="font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace">Try: Tab, Enter, Escape, Ctrl+A, Arrow keys</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       20. COLOR PICKER & MISC INPUTS
+  ═══════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(16,185,129,.12)">🎨</div>
+      <div class="section-title">Misc Inputs (Color, Number, Search, Time)</div>
+      <div class="section-badge">Various input types</div>
+    </div>
+    <div class="section-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Color Picker</label>
+          <div class="flex-row" style="align-items:center">
+            <input type="color" id="color-input" data-testid="color-input" value="#00d4ff" style="width:48px;height:36px;padding:2px;cursor:pointer" onchange="updateColorOut()" />
+            <span id="color-out" style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent)">#00d4ff</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Number Input</label>
+          <input type="number" id="num-input" data-testid="num-input" min="1" max="100" step="5" value="25" style="width:100%" onchange="document.getElementById('num-out').textContent='Value: '+this.value" />
+          <div class="error-msg" id="num-out" style="color:var(--muted);margin-top:.2rem">Value: 25</div>
+        </div>
+        <div class="form-group">
+          <label>Search Input</label>
+          <input type="search" id="search-input" data-testid="search-input" placeholder="Search…" style="width:100%" oninput="document.getElementById('search-out').textContent='Searching: '+this.value" />
+          <div class="error-msg" id="search-out" style="color:var(--muted);margin-top:.2rem">Searching: </div>
+        </div>
+        <div class="form-group">
+          <label>Time Picker</label>
+          <input type="time" id="time-input" data-testid="time-input" style="width:100%" onchange="document.getElementById('time-out').textContent='Time: '+this.value" />
+          <div class="error-msg" id="time-out" style="color:var(--muted);margin-top:.2rem">Time: </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ═══════════════════════════════════════════
+   1. DROPDOWNS
+═══════════════════════════════════════════ */
+const cities = {
+  in: ['Bengaluru','Mumbai','Hyderabad','Chennai','Delhi'],
+  us: ['New York','San Francisco','Austin','Seattle','Chicago'],
+  uk: ['London','Manchester','Edinburgh','Bristol','Leeds']
+};
+document.getElementById('simple-select').addEventListener('change', function(){
+  document.getElementById('simple-select-out').textContent = 'Selected: ' + (this.value || 'none');
+});
+document.getElementById('multi-select').addEventListener('change', function(){
+  const vals = Array.from(this.selectedOptions).map(o=>o.text);
+  document.getElementById('multi-select-out').textContent = 'Selected: ' + (vals.length ? vals.join(', ') : 'none');
+});
+document.getElementById('country-select').addEventListener('change', function(){
+  const city = document.getElementById('city-select');
+  city.innerHTML = '<option value="">Select City</option>';
+  if(this.value && cities[this.value]){
+    cities[this.value].forEach(c => { const o=document.createElement('option'); o.value=c.toLowerCase().replace(' ','-'); o.text=c; city.appendChild(o); });
+    city.disabled = false;
+    document.getElementById('cascade-out').textContent = 'Country: ' + this.options[this.selectedIndex].text;
+  } else {
+    city.disabled = true;
+    document.getElementById('cascade-out').textContent = 'Select a country first';
+  }
+});
+document.getElementById('city-select').addEventListener('change', function(){
+  if(this.value) document.getElementById('cascade-out').textContent =
+    'Country: ' + document.getElementById('country-select').options[document.getElementById('country-select').selectedIndex].text +
+    ' | City: ' + this.options[this.selectedIndex].text;
+});
+let dynOptCount = 0;
+function addDynOption(){
+  dynOptCount++;
+  const sel = document.getElementById('dynamic-select');
+  const o = document.createElement('option');
+  o.value = 'opt-'+dynOptCount; o.text = 'Option ' + dynOptCount;
+  o.setAttribute('data-testid','dyn-option-'+dynOptCount);
+  sel.appendChild(o);
+}
+function removeDynOption(){
+  const sel = document.getElementById('dynamic-select');
+  if(sel.options.length > 1) sel.remove(sel.options.length - 1);
+}
+
+/* ═══════════════════════════════════════════
+   2. DIALOGS
+═══════════════════════════════════════════ */
+function setDialogOut(msg){ document.getElementById('dialog-out').textContent = msg; }
+function triggerAlert(){
+  alert('🎭 Playwright: Handle with page.on("dialog", d => d.accept())');
+  setDialogOut('Alert dismissed');
+}
+function triggerConfirm(){
+  const r = confirm('Confirm this action in Playwright?');
+  setDialogOut('Confirm result: ' + r);
+}
+function triggerPrompt(){
+  const v = prompt('Enter your test ID:', 'test-001');
+  setDialogOut('Prompt value: ' + (v !== null ? v : 'cancelled'));
+}
+function triggerBeforeUnload(){
+  window.onbeforeunload = () => { setTimeout(()=>{ window.onbeforeunload=null; setDialogOut('beforeunload fired & cleared'); },100); return ''; };
+  window.dispatchEvent(new Event('beforeunload'));
+  setDialogOut('beforeunload triggered (cancelled internally)');
+}
+function openCustomModal(){ document.getElementById('custom-modal').classList.add('open'); }
+function openNestedModal(){ document.getElementById('nested-modal').classList.add('open'); }
+function openInnerModal(){ document.getElementById('inner-modal').classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function modalConfirm(){ closeModal('custom-modal'); setDialogOut('Custom modal confirmed ✓'); }
+document.addEventListener('click', e => {
+  if(e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+});
+
+/* ═══════════════════════════════════════════
+   3. STATIC TABLE
+═══════════════════════════════════════════ */
+const tableData = [
+  {id:1,name:'Lokanath Sahu',role:'QA Lead',status:'Active',score:98},
+  {id:2,name:'Priya Sharma',role:'Dev',status:'Active',score:87},
+  {id:3,name:'Rahul Verma',role:'PM',status:'Inactive',score:72},
+  {id:4,name:'Neha Gupta',role:'QA',status:'Active',score:91},
+  {id:5,name:'Amit Kumar',role:'DevOps',status:'Active',score:85},
+  {id:6,name:'Sneha Patel',role:'Dev',status:'Pending',score:79},
+  {id:7,name:'Vikram Singh',role:'QA',status:'Active',score:95},
+  {id:8,name:'Kavya Reddy',role:'PM',status:'Inactive',score:68},
+];
+let sortDir = {};
+function renderStaticTable(data){
+  const tbody = document.getElementById('static-tbody');
+  tbody.innerHTML = '';
+  const statusMap = { Active:'pill-green', Inactive:'pill-red', Pending:'pill-yellow' };
+  data.forEach(r => {
+    tbody.innerHTML += `
+      <tr data-testid="row-${r.id}">
+        <td data-testid="cell-id-${r.id}">${r.id}</td>
+        <td data-testid="cell-name-${r.id}">${r.name}</td>
+        <td data-testid="cell-role-${r.id}">${r.role}</td>
+        <td><span class="badge-pill ${statusMap[r.status]||'pill-blue'}" data-testid="cell-status-${r.id}">${r.status}</span></td>
+        <td data-testid="cell-score-${r.id}">${r.score}</td>
+        <td><button class="btn btn-secondary btn-sm" onclick="rowAction(${r.id})" data-testid="action-${r.id}">View</button></td>
+      </tr>`;
+  });
+  document.getElementById('table-count').textContent = data.length + ' rows';
+}
+function rowAction(id){ alert('Row '+id+' clicked. In Playwright: await page.getByTestId("action-'+id+'").click()'); }
+function filterTable(){
+  const q = document.getElementById('table-search').value.toLowerCase();
+  const filtered = tableData.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+  renderStaticTable(filtered);
+}
+function sortTable(col){
+  const keys = ['id','name','role','status','score'];
+  const k = keys[col];
+  sortDir[k] = !sortDir[k];
+  const sorted = [...tableData].sort((a,b) => {
+    if(a[k] < b[k]) return sortDir[k] ? -1 : 1;
+    if(a[k] > b[k]) return sortDir[k] ? 1 : -1;
+    return 0;
+  });
+  renderStaticTable(sorted);
+}
+renderStaticTable(tableData);
+
+/* ═══════════════════════════════════════════
+   4. DYNAMIC TABLE
+═══════════════════════════════════════════ */
+let dynRows = [], dynId = 1;
+function renderDynTable(){
+  const tbody = document.getElementById('dyn-tbody');
+  tbody.innerHTML = '';
+  if(!dynRows.length){ document.getElementById('dyn-out').textContent = 'Table is empty'; return; }
+  dynRows.forEach((r,i) => {
+    tbody.innerHTML += `
+      <tr data-testid="dyn-row-${r.id}">
+        <td>${i+1}</td>
+        <td><input value="${r.name}" onchange="dynRows[${i}].name=this.value" style="width:100px" data-testid="dyn-name-${r.id}" /></td>
+        <td><input value="${r.email}" onchange="dynRows[${i}].email=this.value" style="width:150px" data-testid="dyn-email-${r.id}" /></td>
+        <td><span class="badge-pill pill-blue">${r.role}</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteDynRow(${r.id})" data-testid="dyn-delete-${r.id}">🗑</button></td>
+      </tr>`;
+  });
+  document.getElementById('dyn-out').textContent = dynRows.length + ' row(s) in table';
+}
+function addDynRow(){
+  const n = document.getElementById('dyn-name').value.trim();
+  const e = document.getElementById('dyn-email').value.trim();
+  const role = document.getElementById('dyn-role').value;
+  if(!n){ alert('Name required'); return; }
+  dynRows.push({id:dynId++, name:n, email:e||'—', role});
+  renderDynTable();
+  document.getElementById('dyn-name').value=''; document.getElementById('dyn-email').value='';
+}
+function deleteDynRow(id){ dynRows = dynRows.filter(r=>r.id!==id); renderDynTable(); }
+function clearDynTable(){ dynRows=[]; renderDynTable(); }
+
+/* ═══════════════════════════════════════════
+   5. PAGINATION
+═══════════════════════════════════════════ */
+const products = Array.from({length:87}, (_,i) => ({
+  id:i+1,
+  product: ['Playwright Course','Selenium Grid','Cypress Pro','k6 Perf','JMeter Kit','Appium Studio','TestRail','Zephyr','Allure','Postman'][i%10] + ' v' + (i+1),
+  category: ['Tools','Testing','Perf','Mobile','API'][i%5],
+  price: '$' + (9.99 + i*1.5).toFixed(2),
+  stock: i%7===0 ? '❌ Out' : '✅ ' + (10+i*3)
+}));
+let curPage = 1;
+function renderPage(pg){
+  const size = parseInt(document.getElementById('page-size').value);
+  const total = Math.ceil(products.length / size);
+  curPage = Math.max(1, Math.min(pg, total));
+  const slice = products.slice((curPage-1)*size, curPage*size);
+  const tbody = document.getElementById('pag-tbody');
+  tbody.innerHTML = slice.map(r => `
+    <tr data-testid="pag-row-${r.id}">
+      <td>${r.id}</td><td>${r.product}</td><td>${r.category}</td><td>${r.price}</td><td>${r.stock}</td>
+    </tr>`).join('');
+  document.getElementById('pag-info').textContent =
+    `Showing ${(curPage-1)*size+1}–${Math.min(curPage*size, products.length)} of ${products.length}`;
+  const ctrl = document.getElementById('pag-controls');
+  ctrl.innerHTML = '';
+  const addBtn = (label, page, disabled, active) => {
+    ctrl.innerHTML += `<button class="page-btn ${active?'active':''}" onclick="renderPage(${page})" ${disabled?'disabled':''} data-testid="page-btn-${label}">${label}</button>`;
+  };
+  addBtn('«', 1, curPage===1, false);
+  addBtn('‹', curPage-1, curPage===1, false);
+  const start = Math.max(1, curPage-2), end = Math.min(total, curPage+2);
+  for(let p=start;p<=end;p++) addBtn(p, p, false, p===curPage);
+  addBtn('›', curPage+1, curPage===total, false);
+  addBtn('»', total, curPage===total, false);
+}
+renderPage(1);
+
+/* ═══════════════════════════════════════════
+   6. FORMS
+═══════════════════════════════════════════ */
+function validateField(el){
+  const err = document.getElementById('err-' + el.id.replace('f-',''));
+  if(!el.value.trim()){ if(err) err.textContent='This field is required'; }
+  else { if(err) err.textContent=''; }
+}
+function validateEmail(){
+  const v = document.getElementById('f-email').value;
+  const err = document.getElementById('err-email');
+  if(!v){ err.textContent=''; return; }
+  err.textContent = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Invalid email address';
+}
+function checkStrength(){
+  const v = document.getElementById('f-pass').value;
+  const bar = document.getElementById('strength-bar');
+  const lbl = document.getElementById('err-pass');
+  let score = 0;
+  if(v.length >= 8) score++;
+  if(/[A-Z]/.test(v)) score++;
+  if(/[0-9]/.test(v)) score++;
+  if(/[^A-Za-z0-9]/.test(v)) score++;
+  const levels = [{w:'0%',c:'#ef4444',l:'Too short'},{w:'25%',c:'#ef4444',l:'Weak'},{w:'50%',c:'#f59e0b',l:'Fair'},{w:'75%',c:'#3b82f6',l:'Good'},{w:'100%',c:'#10b981',l:'Strong'}];
+  const lvl = v.length===0 ? 0 : Math.max(1, score);
+  bar.style.width = levels[lvl].w; bar.style.background = levels[lvl].c;
+  lbl.style.color = levels[lvl].c; lbl.textContent = 'Strength: ' + levels[lvl].l;
+}
+document.getElementById('f-bio').addEventListener('input', function(){
+  const len = Math.min(this.value.length, 300);
+  if(this.value.length > 300) this.value = this.value.slice(0,300);
+  document.getElementById('bio-count').textContent = len + ' / 300';
+});
+function addTag(e){
+  if(e.key !== 'Enter') return;
+  const input = document.getElementById('tag-input');
+  const val = input.value.trim();
+  if(!val) return;
+  const chip = document.createElement('div');
+  chip.className = 'chip'; chip.setAttribute('data-testid','tag-'+val);
+  chip.innerHTML = val + ' <span class="x" onclick="this.parentElement.remove()">×</span>';
+  document.getElementById('tag-wrap').insertBefore(chip, input);
+  input.value = '';
+}
+function submitForm(){
+  const fname = document.getElementById('f-fname').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const agree = document.getElementById('f-agree').checked;
+  let errs = [];
+  if(!fname) errs.push('First name required');
+  if(!email) errs.push('Email required');
+  if(!agree) errs.push('Must agree to terms');
+  const out = document.getElementById('form-out');
+  out.style.display = 'block';
+  if(errs.length){ out.className='output-box error'; out.textContent='❌ ' + errs.join(' | '); return; }
+  out.className='output-box'; out.textContent='✅ Form submitted! Name: '+fname+' | Email: '+email;
+}
+function resetForm(){
+  ['f-fname','f-lname','f-email','f-pass','f-phone','f-dob','f-bio'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-agree').checked=false;
+  ['err-fname','err-lname','err-email','err-pass'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=''; });
+  document.getElementById('strength-bar').style.width='0%';
+  document.getElementById('form-out').style.display='none';
+  document.getElementById('bio-count').textContent='0 / 300';
+}
+
+/* ═══════════════════════════════════════════
+   7. MULTI-STEP WIZARD
+═══════════════════════════════════════════ */
+let wizardStep = 1;
+const totalSteps = 3;
+function wizardNav(dir){
+  const newStep = wizardStep + dir;
+  if(newStep < 1 || newStep > totalSteps) return;
+  if(dir > 0 && wizardStep === totalSteps - 1){
+    document.getElementById('wizard-summary').textContent =
+      '📋 Summary\n\nName: ' + (document.getElementById('w-name').value||'—') +
+      '\nCompany: ' + (document.getElementById('w-company').value||'—') +
+      '\nTool: ' + document.getElementById('w-tool').value +
+      '\nExperience: ' + (document.getElementById('w-exp').value||'—') + ' years';
+  }
+  document.getElementById('wizard-p'+wizardStep).classList.remove('active');
+  document.getElementById('step-'+wizardStep).classList.remove('active');
+  document.getElementById('step-'+wizardStep).classList.add('done');
+  wizardStep = newStep;
+  document.getElementById('wizard-p'+wizardStep).classList.add('active');
+  document.getElementById('step-'+wizardStep).classList.add('active');
+  document.getElementById('step-'+wizardStep).classList.remove('done');
+  document.getElementById('wizard-back').disabled = wizardStep === 1;
+  document.getElementById('wizard-next').textContent = wizardStep === totalSteps ? '🎉 Finish' : 'Next →';
+  if(wizardStep === totalSteps) document.getElementById('wizard-next').onclick = () => { alert('Wizard complete!'); };
+}
+
+/* ═══════════════════════════════════════════
+   8. DYNAMIC ELEMENTS
+═══════════════════════════════════════════ */
+let delayTimer;
+function showDelayed(ms){
+  const box = document.getElementById('delayed-box');
+  const spinner = document.getElementById('spinner1');
+  const txt = document.getElementById('delayed-text');
+  spinner.style.display='block'; txt.textContent='Loading…';
+  clearTimeout(delayTimer);
+  delayTimer = setTimeout(() => {
+    spinner.style.display='none';
+    txt.textContent='✅ Element appeared after ' + (ms/1000) + 's!';
+    box.style.borderColor='var(--accent3)';
+  }, ms);
+}
+function hideDelayed(){
+  clearTimeout(delayTimer);
+  document.getElementById('spinner1').style.display='none';
+  document.getElementById('delayed-text').textContent='Hidden by user';
+  document.getElementById('delayed-box').style.borderColor='var(--border)';
+}
+function loadContent(){
+  const area = document.getElementById('skeleton-area');
+  area.innerHTML = Array(4).fill(0).map((_,i)=>`
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+      <div class="skeleton" style="width:40px;height:40px;border-radius:50%;flex-shrink:0"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:.4rem">
+        <div class="skeleton" style="width:${60+i*10}%"></div>
+        <div class="skeleton" style="width:${40+i*5}%;opacity:.5"></div>
+      </div>
+    </div>`).join('');
+  setTimeout(() => {
+    area.innerHTML = ['🏆 Playwright','🥈 Cypress','🥉 Selenium','🎯 WebDriverIO'].map((item,i)=>`
+      <div class="fade-in" style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border);animation-delay:${i*0.1}s">
+        <div style="width:40px;height:40px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">${item.split(' ')[0]}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text)">${item.split(' ').slice(1).join(' ')}</div>
+      </div>`).join('');
+  }, 2000);
+}
+let toggleVisible = true;
+function toggleElement(){
+  toggleVisible = !toggleVisible;
+  const el = document.getElementById('toggle-box');
+  el.style.display = toggleVisible ? 'block' : 'none';
+}
+let changingTimer, changeWords = ['⚡ Loading...','✅ Loaded!','🔄 Refreshing...','💾 Saving...','🚀 Deployed!','🐛 Bug Found!','🎯 Test Passed!'];
+let changeIdx = 0;
+function startChanging(){
+  if(changingTimer) return;
+  changingTimer = setInterval(() => {
+    document.getElementById('changing-text').textContent = changeWords[changeIdx % changeWords.length];
+    changeIdx++;
+  }, 1000);
+}
+function stopChanging(){ clearInterval(changingTimer); changingTimer=null; }
+function toggleDisable(){
+  const el = document.getElementById('disable-input');
+  el.disabled = !el.disabled;
+}
+
+/* ═══════════════════════════════════════════
+   9. DRAG & DROP
+═══════════════════════════════════════════ */
+let dragSrc = null;
+document.getElementById('drag-list').addEventListener('dragstart', e => {
+  dragSrc = e.target.closest('.drag-item');
+  dragSrc.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', dragSrc.textContent.trim());
+});
+document.getElementById('drag-list').addEventListener('dragend', e => {
+  document.querySelectorAll('.drag-item').forEach(el => el.classList.remove('dragging','drag-over'));
+});
+document.getElementById('drag-list').addEventListener('dragover', e => {
+  e.preventDefault();
+  const target = e.target.closest('.drag-item');
+  if(target && target !== dragSrc){
+    document.querySelectorAll('.drag-item').forEach(el => el.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+    const list = document.getElementById('drag-list');
+    const items = [...list.children];
+    const srcIdx = items.indexOf(dragSrc), tarIdx = items.indexOf(target);
+    if(srcIdx < tarIdx) list.insertBefore(dragSrc, target.nextSibling);
+    else list.insertBefore(dragSrc, target);
+  }
+});
+document.getElementById('drag-list').addEventListener('drop', e => {
+  e.preventDefault();
+  document.querySelectorAll('.drag-item').forEach(el=>el.classList.remove('drag-over'));
+});
+const dropZone = document.getElementById('drop-zone');
+const droppedItems = [];
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over-zone'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over-zone'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over-zone');
+  const text = e.dataTransfer.getData('text/plain');
+  droppedItems.push(text);
+  dropZone.innerHTML = droppedItems.map(t=>`<div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent3)">${t}</div>`).join('');
+  document.getElementById('drag-out').textContent = 'Dropped: ' + droppedItems.join(', ');
+});
+function clearDropZone(){
+  droppedItems.length=0;
+  dropZone.innerHTML='<span>🎯</span><span>Drop items here</span>';
+  document.getElementById('drag-out').textContent='Drop zone cleared';
+}
+
+/* ═══════════════════════════════════════════
+   10. TABS
+═══════════════════════════════════════════ */
+function switchTab(id){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${id}')"]`).classList.add('active');
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   11. SLIDERS
+═══════════════════════════════════════════ */
+function updateSlider(el, outId){
+  const min=+el.min, max=+el.max, val=+el.value;
+  const pct = ((val-min)/(max-min)*100).toFixed(1)+'%';
+  el.style.setProperty('--pct', pct);
+  document.getElementById(outId).textContent = val;
+}
+function updateOpacity(el){
+  document.getElementById('opacity-box').style.opacity = el.value/100;
+}
+['slider1','slider2','slider3'].forEach(id=>{
+  const el=document.getElementById(id); updateSlider(el, id+'-val');
+});
+
+/* ═══════════════════════════════════════════
+   12. FILE UPLOAD
+═══════════════════════════════════════════ */
+function fileDragOver(e){ e.preventDefault(); document.getElementById('file-drop-zone').classList.add('dragover'); }
+function fileDragLeave(){ document.getElementById('file-drop-zone').classList.remove('dragover'); }
+function fileDrop(e){
+  e.preventDefault(); fileDragLeave();
+  showFiles(e.dataTransfer.files);
+}
+function fileSelected(input){ showFiles(input.files); }
+function showFiles(files){
+  if(!files.length) return;
+  const names = Array.from(files).map(f=>`${f.name} (${(f.size/1024).toFixed(1)}KB)`);
+  document.getElementById('file-out').textContent = 'Files: ' + names.join(' | ');
+  const preview = document.getElementById('file-preview');
+  preview.innerHTML = Array.from(files).map(f=>`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;font-size:.72rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+      📄 ${f.name}
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   14. INFINITE SCROLL
+═══════════════════════════════════════════ */
+let infPage = 0, infLoading = false;
+const techItems = ['Playwright','TypeScript','Node.js','React','Docker','Kubernetes','GitHub Actions','Jenkins','PostgreSQL','Firebase','Redis','Kafka','GraphQL','REST API','WebSocket','gRPC','Cypress','Selenium','Appium','k6'];
+function loadInfItems(){
+  if(infLoading) return;
+  infLoading=true;
+  const loader = document.getElementById('inf-loader'); loader.style.display='block';
+  setTimeout(() => {
+    const list=document.getElementById('infinite-list');
+    for(let i=0;i<10;i++){
+      const idx = infPage*10+i;
+      const div=document.createElement('div');
+      div.className='infinite-item'; div.setAttribute('data-testid','inf-item-'+(idx+1));
+      div.innerHTML=`<span class="inf-num">#${idx+1}</span><span>${techItems[idx%techItems.length]} ${Math.floor(idx/techItems.length)+1}.0</span>`;
+      list.appendChild(div);
+    }
+    infPage++; infLoading=false; loader.style.display='none';
+    document.getElementById('inf-out').textContent='Loaded '+infPage*10+' items';
+  }, 600);
+}
+loadInfItems();
+document.getElementById('infinite-list').addEventListener('scroll', function(){
+  if(this.scrollTop+this.clientHeight >= this.scrollHeight-40) loadInfItems();
+});
+
+/* ═══════════════════════════════════════════
+   15. TIMER
+═══════════════════════════════════════════ */
+let timerTotal=30, timerLeft=30, timerInterval, timerRunning=false;
+function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function updateTimerUI(){
+  document.getElementById('countdown-display').textContent=fmt(timerLeft);
+  document.getElementById('countdown-bar').style.width=(timerLeft/timerTotal*100)+'%';
+}
+function startTimer(){
+  if(timerRunning) return;
+  if(timerLeft===0) timerLeft=timerTotal;
+  timerRunning=true;
+  document.getElementById('timer-out').textContent='Running…';
+  timerInterval=setInterval(()=>{
+    timerLeft--;
+    updateTimerUI();
+    if(timerLeft<=0){
+      clearInterval(timerInterval); timerRunning=false;
+      document.getElementById('timer-out').textContent='⏰ Timer complete!';
+      document.getElementById('countdown-bar').style.background='var(--danger)';
+    }
+  },1000);
+}
+function pauseTimer(){
+  clearInterval(timerInterval); timerRunning=false;
+  document.getElementById('timer-out').textContent='Paused at '+fmt(timerLeft);
+}
+function resetTimer(){
+  clearInterval(timerInterval); timerRunning=false; timerLeft=timerTotal;
+  document.getElementById('countdown-bar').style.background='';
+  updateTimerUI();
+  document.getElementById('timer-out').textContent='Timer reset';
+}
+updateTimerUI();
+
+/* ═══════════════════════════════════════════
+   16. SHADOW DOM
+═══════════════════════════════════════════ */
+const host = document.getElementById('shadow-host');
+const shadow = host.attachShadow({mode:'open'});
+shadow.innerHTML = `
+  <style>
+    :host { display:block; padding:1rem; background:#111827; border:1px dashed #334155; border-radius:10px; font-family:monospace; }
+    input { background:#1e293b;border:1px solid #334155;color:#e2e8f0;border-radius:6px;padding:6px 10px;outline:none;font-family:monospace; }
+    input:focus { border-color:#00d4ff; }
+    button { background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-family:monospace;font-weight:700; }
+    #out { margin-top:.75rem;color:#10b981;font-size:.8rem;min-height:1rem; }
+  </style>
+  <div style="color:#00d4ff;font-weight:700;margin-bottom:.75rem;font-size:.82rem">🌑 Inside Shadow DOM</div>
+  <input id="shadow-input" data-testid="shadow-input" placeholder="Type inside shadow root…" />
+  <button id="shadow-btn" data-testid="shadow-btn" onclick="document.getElementById('shadow-host').shadowRoot.getElementById('shadow-out').textContent='Value: '+document.getElementById('shadow-host').shadowRoot.getElementById('shadow-input').value; document.getElementById('shadow-out').textContent='Shadow value captured: '+document.getElementById('shadow-host').shadowRoot.getElementById('shadow-input').value">Submit</button>
+  <div id="shadow-out"></div>
+`;
+
+/* ═══════════════════════════════════════════
+   17. CONTEXT MENU
+═══════════════════════════════════════════ */
+function showCtxMenu(e){
+  e.preventDefault();
+  const menu = document.getElementById('ctx-menu');
+  menu.style.display='block'; menu.style.left=e.clientX+'px'; menu.style.top=e.clientY+'px';
+}
+function ctxAction(action){
+  document.getElementById('ctx-menu').style.display='none';
+  document.getElementById('ctx-out').textContent='Context action: ' + action + ' (at ' + new Date().toLocaleTimeString() + ')';
+}
+document.addEventListener('click', () => { document.getElementById('ctx-menu').style.display='none'; });
+
+/* ═══════════════════════════════════════════
+   18. NETWORK MOCK
+═══════════════════════════════════════════ */
+const mockData = {
+  success: [
+    {id:'TXN001',user:'Lokanath',status:'Active',amount:'₹50,000'},
+    {id:'TXN002',user:'Priya',status:'Active',amount:'₹25,000'},
+    {id:'TXN003',user:'Rahul',status:'Pending',amount:'₹10,000'},
+  ],
+  empty: [],
+};
+function fetchMockData(type){
+  const statusEl = document.getElementById('api-status');
+  const tableWrap = document.getElementById('api-table-wrap');
+  const tbody = document.getElementById('api-tbody');
+  statusEl.textContent = type==='slow' ? '⏳ Waiting for slow response…' : '🔄 Fetching…';
+  statusEl.className='output-box warn';
+  tableWrap.style.display='none';
+  const delay = type==='slow' ? 3000 : 600;
+  setTimeout(()=>{
+    if(type==='error'){
+      statusEl.textContent='❌ 500 Internal Server Error — Mock API failure'; statusEl.className='output-box error'; return;
+    }
+    if(type==='empty'){
+      statusEl.textContent='✅ 200 OK — Response: [] (empty array)'; statusEl.className='output-box'; return;
+    }
+    const data = mockData.success;
+    tbody.innerHTML = data.map(r=>`
+      <tr data-testid="api-row-${r.id}">
+        <td>${r.id}</td><td>${r.user}</td>
+        <td><span class="badge-pill ${r.status==='Active'?'pill-green':'pill-yellow'}">${r.status}</span></td>
+        <td>${r.amount}</td>
+      </tr>`).join('');
+    statusEl.textContent='✅ 200 OK — '+data.length+' records received'+(type==='slow'?' (after 3s delay)':'');
+    statusEl.className='output-box';
+    tableWrap.style.display='block';
+  }, delay);
+}
+
+/* ═══════════════════════════════════════════
+   19. KEYBOARD EVENTS
+═══════════════════════════════════════════ */
+let keyLog = [];
+function logKey(e){
+  const entry = `key="${e.key}" code="${e.code}" ctrl=${e.ctrlKey} shift=${e.shiftKey} alt=${e.altKey}`;
+  keyLog.unshift(entry);
+  if(keyLog.length>6) keyLog.pop();
+  document.getElementById('key-out').textContent = keyLog.join('\n');
+}
+
+/* ═══════════════════════════════════════════
+   20. COLOR PICKER
+═══════════════════════════════════════════ */
+function updateColorOut(){
+  const val = document.getElementById('color-input').value;
+  document.getElementById('color-out').textContent = val;
+  document.getElementById('color-out').style.color = val;
+}
+</script>
+</body>
+</html>
