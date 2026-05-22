@@ -1,9 +1,9 @@
-<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="17.088060999999996">
-<testsuite name="A1.spec.ts" timestamp="2026-04-29T17:33:59.556Z" hostname="chromium" tests="1" failures="0" skipped="0" time="15.15" errors="0">
-<testcase name="Verify the Frame5 With inner Link" classname="A1.spec.ts" time="15.15">
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="13.629794">
+<testsuite name="A1.spec.ts" timestamp="2026-05-22T14:28:51.732Z" hostname="chromium" tests="1" failures="0" skipped="0" time="4.935" errors="0">
+<testcase name="Verify the Frame5 With inner Link" classname="A1.spec.ts" time="4.935">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|test-results/A1-Verify-the-Frame5-With-inner-Link-chromium/trace.zip]]
+[[ATTACHMENT|test-results\A1-Verify-the-Frame5-With-inner-Link-chromium\trace.zip]]
 ]]>
 </system-out>
 </testcase>

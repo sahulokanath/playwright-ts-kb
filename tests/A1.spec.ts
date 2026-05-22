@@ -13,7 +13,7 @@ test.skip('ver', async ({ page }) => {
     })
 
     await page.getByRole('button', { name: 'Simple Alert' }).click();
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(4000);
 
 })
 
