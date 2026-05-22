@@ -23,6 +23,18 @@ test('test2', async ({ page }) => {
 
   const logo = page.getByRole('img', { name: 'Tricentis Demo Web Shop' })
 
-  expect(await logo.screenshot()).toMatchSnapshot('logo.png')
+  expect(await logo.screenshot()).toMatchSnapshot('logo1-linux.png')
 
 })
+
+test('Logo validation', async ({ page }) => {
+
+  await page.goto('https://demowebshop.tricentis.com/');
+
+  const logo = page.getByRole('img', {
+    name: 'Tricentis Demo Web Shop'
+  });
+
+  await expect(logo).toHaveScreenshot('logo-linux.png');
+
+});

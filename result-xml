@@ -1,41 +1,9 @@
-<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="19.404824">
-<testsuite name="Fb.spec.ts" timestamp="2026-04-22T07:38:23.226Z" hostname="chromium" tests="1" failures="1" skipped="0" time="17.371" errors="0">
-<testcase name="Face Login" classname="Fb.spec.ts" time="17.371">
-<failure message="Fb.spec.ts:3:5 Face Login" type="FAILURE">
-<![CDATA[  [chromium] › Fb.spec.ts:3:5 › Face Login ─────────────────────────────────────────────────────────
-
-    Error: page.goto: Target page, context or browser has been closed
-    Call log:
-      - navigating to "https://www.facebook.com/login", waiting until "load"
-
-
-      2 |
-      3 | test('Face Login',async({page})=>{
-    > 4 |   await  page.goto('https://www.facebook.com/login');
-        |               ^
-      5 |
-      6 |   await page.locator('input[name="email"]').fill('sahulokanath382@gmail.com');
-      7 |   await page.locator('input[type="password"]').fill('@1234@Guru');
-        at /home/lokanath/TSDEMOs/playwright-ts-kb/tests/Fb.spec.ts:4:15
-
-    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
-    ../test-results/Fb-Face-Login-chromium/video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
-    ../test-results/Fb-Face-Login-chromium/trace.zip
-    Usage:
-
-        npx playwright show-trace ../test-results/Fb-Face-Login-chromium/trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="17.088060999999996">
+<testsuite name="A1.spec.ts" timestamp="2026-04-29T17:33:59.556Z" hostname="chromium" tests="1" failures="0" skipped="0" time="15.15" errors="0">
+<testcase name="Verify the Frame5 With inner Link" classname="A1.spec.ts" time="15.15">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|test-results/Fb-Face-Login-chromium/video.webm]]
-
-[[ATTACHMENT|test-results/Fb-Face-Login-chromium/trace.zip]]
+[[ATTACHMENT|test-results/A1-Verify-the-Frame5-With-inner-Link-chromium/trace.zip]]
 ]]>
 </system-out>
 </testcase>

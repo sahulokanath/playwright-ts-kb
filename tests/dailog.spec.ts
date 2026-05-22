@@ -24,6 +24,20 @@ test.skip('Verify The Dailog Alert', async ({ page }) => {
 
 })
 
+test.only('ver',async({page})=>{
+
+ await page.goto("https://testautomationpractice.blogspot.com/")
+
+ page.on('dialog',(dialog)=>{
+
+  console.log(dialog.message())
+  dialog.accept()
+
+ })
+ await page.getByRole('button',{name:'Simple Alert'}).click();
+ await page.waitForTimeout(5000);
+})
+
 
 test.skip('Verify Confirmation Alert', async ({ page }) => {
 
@@ -43,12 +57,12 @@ test.skip('Verify Confirmation Alert', async ({ page }) => {
   expect(page.locator('#demo')).toHaveText('You pressed Cancel!')
 
   await page.locator('#confirmBtn').click();
-
+  
   console.log("Text:--", text)
   await page.waitForTimeout(5000);
 })
 
-test.only('Verify Prompt Alert', async ({ page }) => {
+test.skip('Verify Prompt Alert', async ({ page }) => {
 
   await page.goto("https://testautomationpractice.blogspot.com/")
 

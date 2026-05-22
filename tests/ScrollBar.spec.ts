@@ -5,9 +5,11 @@ test('Verify the scroll bar', async ({ page }) => {
 
     await page.goto("https://testautomationpractice.blogspot.com/");
 
-    const ele = page.getByText('Blogger');
+    const ele = page.('Blogger');
 
     await expect(ele).toBeVisible();
+
+    
 
 
 })

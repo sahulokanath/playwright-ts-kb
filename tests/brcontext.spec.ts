@@ -21,3 +21,24 @@ test('Verify Browser ContextDemo', async () => {
     await page2.waitForTimeout(5000);
 
 })
+
+test.only('Verify Browser 1 ContextDemo', async () => {
+
+  // 1. launch browser
+  const browser = await chromium.launch();
+
+  // 2. create context
+  const context = await browser.newContext();
+
+  // 3. new page
+  const page1 = await context.newPage();
+
+  await page1.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+
+
+  // here we created the newpage/window /tab
+  const newPage=context.waitForEvent('page');
+  (await newPage).getByRole('link',{name:'OrangeHRM, Inc'})
+
+
+});

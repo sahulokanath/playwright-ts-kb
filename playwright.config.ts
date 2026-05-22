@@ -33,7 +33,7 @@ export default defineConfig({
   use: {
 
 
-    //baseURL: process.env.BASE_URL,
+    baseURL:'https://restful-booker.herokuapp.com/apidoc/index.html',
     //headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

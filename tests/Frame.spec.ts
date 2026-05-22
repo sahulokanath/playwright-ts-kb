@@ -56,19 +56,37 @@ test.skip('Inner Frame /chiled ', async ({ page }) => {
 
 test.only('Verify the Frame5 With inner Link', async ({ page }) => {
 
-    await page.goto("https://ui.vision/demo/webtest/frames/")
+    await page.goto("https://vinothqaacademy.com/iframe/")
 
-    const frame5 = page.frame({ url: "https://ui.vision/demo/webtest/frames/frame_5.html" })
+  //const frame= page.frameLocator("//iframe[@name='employeetable']"); //using locater
 
-    if (frame5) {
-        frame5.locator('[name="mytext5"]').fill("Hello Frmae5");
-        const chiled = frame5.childFrames();
-        frame5.locator("//a").click();
-        
+  //const frame=  page.frame({url:"https://vinothqaacademy.com/alert-and-popup/"})//using url
 
-        await page.waitForTimeout(10000);
+  const frame=page.frame({name:'registeruser'})
+/*
+    if (frame) {
+       
+        page.on('dialog',(dialog)=>{
+
+            console.log(dialog.message())
+            dialog.accept('hi');
+
+        })
+        await frame.locator('//button[@name="alertbox"]').click();
+
+        await frame.locator('//button[@name="confirmalertbox"]').click();
+        await frame.locator('//button[@name="promptalertbox1234"]').click();
+        await frame.waitForTimeout(5000);
 
     }
 
+    */
+   
+    if(frame)
+    {
+        await frame.locator('#vfb-5').fill('hi');
+                    await frame.waitForTimeout(5000);
+
+    }
 
 })

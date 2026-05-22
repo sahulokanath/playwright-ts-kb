@@ -1,0 +1,11 @@
+
+when new file i add in local 
+
+git add -A or git add . or git add filename
+
+Need to commit
+
+git commit -m "NewfilAdd"
+
+git push origin main
+
